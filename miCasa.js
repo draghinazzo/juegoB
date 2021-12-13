@@ -21,6 +21,7 @@ var config = {
 var game = new Phaser.Game(config);
 
 var jugador;
+var gato;
 
 var arriba, derecha, izquierda, abajo;
 
@@ -30,13 +31,14 @@ var mapa;
 
 function  preload() {
     this.load.spritesheet('personaje1', 'assets/sprites/viejoSF.png', {frameWidth: 16, frameHeight:  18});
+    this.load.spritesheet('gato', 'assets/sprites/catSprite/gatoSF.png', {frameWidth: 85, frameHeight:  68});
 
     this.load.tilemapTiledJSON('interiorMiCasa', 'assets/mapa/interiorMiCasa.json');
     this.load.image('tileSets', 'assets/mapa/Tileset insides.png');
 }
 
 function ejecurar(){
-    location.replace("http://localhost/juegoB1"); 
+    location.replace("http://localhost/juegoB"); 
 }
 
 function create() {
@@ -46,10 +48,12 @@ function create() {
     var capaSuelo = mapa.createDynamicLayer('capaSuelo', tilesets, 0, 0 );
     var capaPared = mapa.createDynamicLayer('capaPared', tilesets, 0, 0 );
     jugador = this.physics.add.sprite(335,364, 'personaje1', 0);
+    gato = this.physics.add.sprite(500,250, 'gato', 11);
     var capaMuebles = mapa.createDynamicLayer('capaMuebles', tilesets, 0, 0 );
     var capaPuerta = mapa.createDynamicLayer('capaPuerta', tilesets, 0, 0 );
 
     jugador.setScale(1.5);
+    gato.setScale(.3);
 
     capaMuebles.setCollisionByProperty({ colision: true});
     capaPared.setCollisionByProperty({ colision: true});
@@ -57,6 +61,7 @@ function create() {
 
     
     jugador.setCollideWorldBounds(true);
+    gato.setCollideWorldBounds(true);
     this.physics.add.collider(jugador, capaPuerta, ejecurar, null, this);
 
 
@@ -64,6 +69,12 @@ function create() {
         key: 'caminarI',
         frames: this.anims.generateFrameNumbers('personaje1', {start: 3, end: 5}),
         frameRate: 10
+    })
+
+    this.anims.create({
+        key: 'caminarIGato',
+        frames: this.anims.generateFrameNumbers('gato', {start: 14, end: 17}),
+        frameRate: 8
     })
 
     this.anims.create({
@@ -85,6 +96,7 @@ function create() {
     })
 
     this.physics.add.collider(jugador, capaMuebles);
+    this.physics.add.collider(gato, capaPared);
     this.physics.add.collider(jugador, capaPared);
     this.physics.add.collider(jugador, capaPuerta);
 
@@ -96,11 +108,14 @@ function create() {
 
 function update() {
     jugador.body.setVelocityX(0);
+    gato.body.setVelocityX(0);
     jugador.body.setVelocityY(0);
-
+    gato.body.setVelocityX(-velocidad);
+        gato.flipx = false;
     if(izquierda.isDown){
         jugador.body.setVelocityX(-velocidad);
         jugador.flipx = false;
+
     }
     if(derecha.isDown){
         jugador.body.setVelocityX(velocidad);
@@ -117,6 +132,7 @@ function update() {
         jugador.flipy = false;
 
     }
+    gato.anims.play('caminarIGato', true);
 
     if( izquierda.isDown ){
         jugador.anims.play('caminarI', true);

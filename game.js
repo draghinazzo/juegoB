@@ -1,3 +1,4 @@
+
 var config = {
     type: Phaser.AUTO,
     width: 480,
@@ -36,10 +37,14 @@ function  preload() {
 }
 
 function ejecurar(){
-    location.replace("http://localhost/juegoB1/miCasa.html"); 
+    location.replace("http://localhost/juegoB/miCasa.html"); 
 }
 
 function create() {
+    socket.on('jugadorIzquirda', () => {
+        console.log('alguien camina');
+    });
+
     mapa = this.make.tilemap({ key: 'mapa'});
     var tilesets = mapa.addTilesetImage('tileset-shinygold2', 'tileSets');
     
@@ -103,10 +108,11 @@ function update() {
     // console.log('y', jugador.y)
     jugador.body.setVelocityX(0);
     jugador.body.setVelocityY(0);
-
+    
     if(izquierda.isDown){
         jugador.body.setVelocityX(-velocidad);
         jugador.flipx = false;
+        socket.emit('izquierda');
     }
     if(derecha.isDown){
         jugador.body.setVelocityX(velocidad);
